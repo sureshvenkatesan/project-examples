@@ -35,7 +35,8 @@ pipeline {
                 rtPipInstall (
                     resolverId: "PIP_RESOLVER",
                     args: "-r python-example/pip-example/requirements.txt --no-cache-dir --force-reinstall",
-                    envActivation: virtual_env_activation
+                    envActivation: virtual_env_activation,
+                    project: "proj1"
                 )
             }
         }
