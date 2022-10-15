@@ -61,7 +61,8 @@ pipeline {
                                 "target": "proj1-pypi-virtual/"
                             }
                         ]
-                    }'''
+                    }''',
+                    project: "proj1"
                 )
             }
         }
