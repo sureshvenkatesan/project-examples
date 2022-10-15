@@ -1,4 +1,4 @@
-def virtual_env_activation = "source /Users/myUser/venv-example/bin/activate" // pip virtual-environment activation command
+def virtual_env_activation = ". /Users/sureshv/PycharmProjects/venv/scripts/common/activate" // pip virtual-environment activation command
 
 pipeline {
     agent any
@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage ('Clone') {
             steps {
-                git branch: 'master', url: "https://github.com/jfrog/project-examples.git"
+                git branch: 'master', url: "https://github.com/sureshvenkatesan/project-examples.git"
             }
         }
 
@@ -21,7 +21,7 @@ pipeline {
                 rtPipResolver (
                     id: "PIP_RESOLVER",
                     serverId: "ARTIFACTORY_SERVER",
-                    repo: "pypi-virtual"
+                    repo: "proj1-pypi-virtual"
                 )
             }
         }
@@ -30,7 +30,7 @@ pipeline {
             steps {
                 rtPipInstall (
                     resolverId: "PIP_RESOLVER",
-                    args: "-r python-example/requirements.txt",
+                    args: "-r python-example/pip-example/requirements.txt",
                     envActivation: virtual_env_activation
                 )
             }
@@ -40,7 +40,7 @@ pipeline {
             steps {
                 sh '''
                     $virtual_env_activation
-                    cd python-example
+                    cd python-example/pip-example
                     python setup.py sdist bdist_wheel
                 '''
             }
@@ -53,8 +53,8 @@ pipeline {
                     spec: '''{
                         "files": [
                             {
-                                "pattern": "python-example/dist/",
-                                "target": "pypi-virtual/"
+                                "pattern": "python-example/pip-example/dist/",
+                                "target": "proj1-pypi-virtual/"
                             }
                         ]
                     }'''
@@ -65,9 +65,21 @@ pipeline {
         stage ('Publish build info') {
             steps {
                 rtPublishBuildInfo (
-                    serverId: "ARTIFACTORY_SERVER"
+                    serverId: "ARTIFACTORY_SERVER",
+                    project: "proj1"
                 )
             }
         }
+        
+        stage ('Xray scan') {
+            steps {
+                xrayScan (
+                    serverId: "ARTIFACTORY_SERVER",
+                    project: "proj1",
+                    failBuild: false
+                )
+            }
+        }
+        
     }
 }
