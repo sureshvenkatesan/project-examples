@@ -3,10 +3,7 @@ def virtual_env_activation = ". /Users/sureshv/PycharmProjects/my_virtual_env/bi
 pipeline {
     agent any
 
-    tools {
 
-        jdk 'Java 18'
-    }
     stages {
         stage ('Clone') {
             steps {
