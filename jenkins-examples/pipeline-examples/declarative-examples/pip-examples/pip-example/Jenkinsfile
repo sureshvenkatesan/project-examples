@@ -1,4 +1,4 @@
-def virtual_env_activation = ". /Users/sureshv/PycharmProjects/venv/scripts/common/activate" // pip virtual-environment activation command
+def virtual_env_activation = ". /Users/sureshv/PycharmProjects/my_virtual_env/bin/activate" // pip virtual-environment activation command
 
 pipeline {
     agent any
