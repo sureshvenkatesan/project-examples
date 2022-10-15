@@ -2,19 +2,20 @@ node {
     def server = Artifactory.server SERVER_ID
     def rtPip = Artifactory.newPipBuild()
     def buildInfo
-    def virtual_env_activation = "source /Users/myUser/venv-example/bin/activate" // pip virtual-environment activation command
+    def virtual_env_activation = ". /Users/sureshv/PycharmProjects/my_virtual_env/bin/activate" // pip virtual-environment activation command
 
     stage ('Clone') {
         git url: 'https://github.com/jfrog/project-examples.git'
     }
 
     stage ('Artifactory configuration') {
-        rtPip.resolver repo: 'pypi-virtual', server: server
+        rtPip.resolver repo: PIP_RESOLVER , server: server
         buildInfo = Artifactory.newBuildInfo()
+        buildInfo.project = 'proj1'
     }
 
     stage ('Pip install') {
-        rtPip.install buildInfo: buildInfo, args: "-r python-example/requirements.txt", envActivation: virtual_env_activation
+        rtPip.install buildInfo: buildInfo, args: "-r python-example/pip-example/requirements.txt --no-cache-dir --force-reinstall", envActivation: virtual_env_activation
     }
 
     stage ('Package and create distribution archives') {
@@ -29,8 +30,8 @@ node {
         def uploadSpec = """{
             "files": [
                 {
-                    "pattern": "python-example/dist/",
-                    "target": "pypi-virtual/"
+                    "pattern": "python-example/pip-example/dist/",
+                    "target": "proj1-pypi-virtual/"
                 }
             ]
         }"""
@@ -39,5 +40,17 @@ node {
 
     stage ('Publish build info') {
         server.publishBuildInfo buildInfo
+    }
+    
+   stage ('Xray scan') {
+       def scanConfig = [
+    'buildName'      : buildInfo.name,
+    'buildNumber'    : buildInfo.number,
+     // Only if this build is associated with a project in Artifactory, set the project key as follows.
+    'project'        : 'proj1',
+    'failBuild'      : false
+  ]
+        def scanResult = server.xrayScan scanConfig
+       
     }
 }
