@@ -51,7 +51,7 @@ node {
                     target: "proj1-pypi-virtual/athenatest"
         ]]
         //server.upload buildInfo: buildInfo, spec: uploadSpec
-        server.upload(spec: toJson([files: uploadFile]),buildInfo: buildInfo)
+        server.upload(spec: groovy.json.JsonOutput.toJson([files: uploadFile]),buildInfo: buildInfo)
     }
 
     stage ('Publish build info') {
