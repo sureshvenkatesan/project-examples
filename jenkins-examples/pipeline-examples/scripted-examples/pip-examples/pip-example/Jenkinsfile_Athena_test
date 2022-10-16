@@ -17,14 +17,15 @@ node {
     stage ('Pip install') {
         rtPip.install buildInfo: buildInfo, args: "-r python-example/pip-example/requirements.txt --no-cache-dir --force-reinstall", envActivation: virtual_env_activation
     
-    
+        echo 'in rtPip.install' 
         if (buildInfo.getDependencies().size() > 0) {
             def localPath = buildInfo.getDependencies()[0].getLocalPath()
             def remotePath = buildInfo.getDependencies()[0].getRemotePath()
             def md5 = buildInfo.getDependencies()[0].getMd5()
             def sha1 = buildInfo.getDependencies()[0].getSha1()
-            echo "in rtPip.install" 
+            
             echo localPath
+            echo remotePath
         }
     }
 
@@ -50,20 +51,21 @@ node {
                     target: "proj1-pypi-virtual/athenatest"
         ]]
         //server.upload buildInfo: buildInfo, spec: uploadSpec
-        server.upload(spec: toJason([files: uploadFile]),buildInfo: buildInfo)
+        server.upload(spec: toJson([files: uploadFile]),buildInfo: buildInfo)
     }
 
     stage ('Publish build info') {
+            echo 'In Publish build info' 
             if (buildInfo.getDependencies().size() > 0) {
             def localPath = buildInfo.getDependencies()[0].getLocalPath()
             def remotePath = buildInfo.getDependencies()[0].getRemotePath()
             def md5 = buildInfo.getDependencies()[0].getMd5()
             def sha1 = buildInfo.getDependencies()[0].getSha1()
-            echo "Publish build info" 
+            
             echo localPath
         }
         else {
-        echo "buildInfo is empty before publishBuildInfo !!!" 
+        echo 'buildInfo is empty before publishBuildInfo !!!' 
         }
         
         server.publishBuildInfo buildInfo
