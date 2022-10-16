@@ -24,7 +24,7 @@ node {
             def md5 = buildInfo.getDependencies()[0].getMd5()
             def sha1 = buildInfo.getDependencies()[0].getSha1()
             echo "in rtPip.install" 
-            echo localPath as Srtring
+            echo localPath
         }
     }
 
@@ -60,7 +60,7 @@ node {
             def md5 = buildInfo.getDependencies()[0].getMd5()
             def sha1 = buildInfo.getDependencies()[0].getSha1()
             echo "Publish build info" 
-            echo localPath as Srtring
+            echo localPath
         }
         else {
         echo "buildInfo is empty before publishBuildInfo !!!" 
