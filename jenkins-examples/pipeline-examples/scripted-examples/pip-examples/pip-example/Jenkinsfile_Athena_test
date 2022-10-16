@@ -1,0 +1,83 @@
+node {
+    def server = Artifactory.server SERVER_ID
+    def rtPip = Artifactory.newPipBuild()
+    def buildInfo
+    def virtual_env_activation = ". /Users/sureshv/PycharmProjects/my_virtual_env/bin/activate" // pip virtual-environment activation command
+
+    stage ('Clone') {
+        git url: 'https://github.com/jfrog/project-examples.git'
+    }
+
+    stage ('Artifactory configuration') {
+        rtPip.resolver repo: PIP_RESOLVER , server: server
+        buildInfo = Artifactory.newBuildInfo()
+        buildInfo.project = 'proj1'
+    }
+
+    stage ('Pip install') {
+        rtPip.install buildInfo: buildInfo, args: "-r python-example/pip-example/requirements.txt --no-cache-dir --force-reinstall", envActivation: virtual_env_activation
+    
+    
+        if (buildInfo.getDependencies().size() > 0) {
+            def localPath = buildInfo.getDependencies()[0].getLocalPath()
+            def remotePath = buildInfo.getDependencies()[0].getRemotePath()
+            def md5 = buildInfo.getDependencies()[0].getMd5()
+            def sha1 = buildInfo.getDependencies()[0].getSha1()
+            echo "in rtPip.install" 
+            echo localPath as Srtring
+        }
+    }
+
+    stage ('Package and create distribution archives') {
+        sh '''
+            $virtual_env_activation
+            cd python-example/pip-example
+            python setup.py sdist bdist_wheel
+        '''
+    }
+
+    stage ('Upload packages') {
+      /*  def uploadSpec = """{
+            "files": [
+                {
+                    "pattern": "python-example/pip-example/dist/",
+                    "target": "proj1-pypi-virtual/"
+                }
+            ]
+        }""" */
+        def uploadFile = [[
+                    pattern: "python-example/pip-example/dist/",
+                    target: "proj1-pypi-virtual/athenatest"
+        ]]
+        //server.upload buildInfo: buildInfo, spec: uploadSpec
+        server.upload(spec: toJason([files: uploadFile]),buildInfo: buildInfo)
+    }
+
+    stage ('Publish build info') {
+            if (buildInfo.getDependencies().size() > 0) {
+            def localPath = buildInfo.getDependencies()[0].getLocalPath()
+            def remotePath = buildInfo.getDependencies()[0].getRemotePath()
+            def md5 = buildInfo.getDependencies()[0].getMd5()
+            def sha1 = buildInfo.getDependencies()[0].getSha1()
+            echo "Publish build info" 
+            echo localPath as Srtring
+        }
+        else {
+        echo "buildInfo is empty before publishBuildInfo !!!" 
+        }
+        
+        server.publishBuildInfo buildInfo
+    }
+    
+   stage ('Xray scan') {
+       def scanConfig = [
+    'buildName'      : buildInfo.name,
+    'buildNumber'    : buildInfo.number,
+     // Only if this build is associated with a project in Artifactory, set the project key as follows.
+    'project'        : 'proj1',
+    'failBuild'      : false
+  ]
+        def scanResult = server.xrayScan scanConfig
+       
+    }
+}
