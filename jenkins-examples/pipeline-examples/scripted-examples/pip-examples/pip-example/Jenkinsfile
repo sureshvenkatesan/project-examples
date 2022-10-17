@@ -39,6 +39,24 @@ node {
     }
 
     stage ('Publish build info') {
+        echo 'In Publish build info' 
+               if (buildInfo.getDependencies().size() > 0) {
+                   echo 'buildInfo.getDependencies().size() > 0'
+                    def localPath = buildInfo.getDependencies()[0].getLocalPath()
+                    def remotePath = buildInfo.getDependencies()[0].getRemotePath()
+                    def md5 = buildInfo.getDependencies()[0].getMd5()
+                    def sha1 = buildInfo.getDependencies()[0].getSha1()
+                   echo localPath
+                }
+                if (buildInfo.getArtifacts().size() > 0) {
+                    echo 'buildInfo.getArtifacts().size() > 0'
+                    
+                    def localPath = buildInfo.getArtifacts()[0].getLocalPath()
+                    def remotePath = buildInfo.getArtifacts()[0].getRemotePath()
+                    def md5 = buildInfo.getArtifacts()[0].getMd5()
+                    def sha1 = buildInfo.getArtifacts()[0].getSha1()
+                    echo localPath
+                }
         server.publishBuildInfo buildInfo
     }
     
