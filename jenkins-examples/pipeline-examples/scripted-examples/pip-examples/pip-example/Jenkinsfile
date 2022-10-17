@@ -16,6 +16,20 @@ node {
 
     stage ('Pip install') {
         rtPip.install buildInfo: buildInfo, args: "-r python-example/pip-example/requirements.txt --no-cache-dir --force-reinstall", envActivation: virtual_env_activation
+               echo 'Pip install' 
+               if (buildInfo.getDependencies().size() > 0) {
+                   echo 'buildInfo.getDependencies().size() > 0'
+                    def localPath = buildInfo.getDependencies()[0].getLocalPath()
+                    def remotePath = buildInfo.getDependencies()[0].getRemotePath()
+                    def md5 = buildInfo.getDependencies()[0].getMd5()
+                    def sha1 = buildInfo.getDependencies()[0].getSha1()
+                   echo localPath
+                }
+        if (buildInfo.getDependencies().size() == 0){
+            echo 'buildInfo.getDependencies() is empty'
+        }
+        
+        
     }
 
     stage ('Package and create distribution archives') {
@@ -37,15 +51,7 @@ node {
         }"""
         server.upload buildInfo: buildInfo, spec: uploadSpec
        // buildInfo = server.upload spec: uploadSpec
-           echo 'In Upload packages' 
-               if (buildInfo.getDependencies().size() > 0) {
-                   echo 'buildInfo.getDependencies().size() > 0'
-                    def localPath = buildInfo.getDependencies()[0].getLocalPath()
-                    def remotePath = buildInfo.getDependencies()[0].getRemotePath()
-                    def md5 = buildInfo.getDependencies()[0].getMd5()
-                    def sha1 = buildInfo.getDependencies()[0].getSha1()
-                   echo localPath
-                }
+
     }
 
     stage ('Publish build info') {
