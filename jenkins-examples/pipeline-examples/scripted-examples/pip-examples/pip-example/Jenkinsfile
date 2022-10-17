@@ -35,7 +35,8 @@ node {
                 }
             ]
         }"""
-        server.upload buildInfo: buildInfo, spec: uploadSpec
+       // server.upload buildInfo: buildInfo, spec: uploadSpec
+        buildInfo = server.upload spec: uploadSpec
     }
 
     stage ('Publish build info') {
