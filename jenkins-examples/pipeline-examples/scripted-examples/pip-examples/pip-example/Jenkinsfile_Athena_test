@@ -56,7 +56,7 @@ node {
 
     stage ('Publish build info') {
             echo 'In Publish build info' 
-            echo buildInfo
+            echo buildInfo.toString()
             if (buildInfo.getDependencies().size() > 0) {
             def localPath = buildInfo.getDependencies()[0].getLocalPath()
             def remotePath = buildInfo.getDependencies()[0].getRemotePath()
