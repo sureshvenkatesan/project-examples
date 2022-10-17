@@ -56,6 +56,7 @@ node {
 
     stage ('Publish build info') {
             echo 'In Publish build info' 
+            echo buildInfo
             if (buildInfo.getDependencies().size() > 0) {
             def localPath = buildInfo.getDependencies()[0].getLocalPath()
             def remotePath = buildInfo.getDependencies()[0].getRemotePath()
@@ -64,8 +65,9 @@ node {
             
             echo localPath
         }
-        else {
-        echo 'buildInfo is empty before publishBuildInfo !!!' 
+        if (buildInfo.getDependencies().size() == 0) {
+           echo 'buildInfo is empty before publishBuildInfo !!!' 
+           
         }
         
         server.publishBuildInfo buildInfo
