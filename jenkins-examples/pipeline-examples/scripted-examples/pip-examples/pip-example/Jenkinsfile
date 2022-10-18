@@ -36,7 +36,7 @@ node {
         sh '''
             $virtual_env_activation
             cd python-example/pip-example
-            python setup.py sdist bdist_wheel
+            python setup.py sdist
         '''
     }
 
