@@ -86,6 +86,17 @@ node('us-staging-jenkins')
                 echo 'Published the buildInfo' 
                 sleep 600
             }
+            stage ('Xray scan') {
+		       def scanConfig = [
+		    'buildName'      : buildInfo.name,
+		    'buildNumber'    : buildInfo.number,
+		     // Only if this build is associated with a project in Artifactory, set the project key as follows.
+		    'project'        : 'proj1',
+		    'failBuild'      : false
+		  ]
+		        def scanResult = server.xrayScan scanConfig
+		       
+		}
       }
 
 
