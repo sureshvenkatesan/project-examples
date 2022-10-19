@@ -29,7 +29,7 @@ node('us-staging-jenkins')
             }
 
             stage ('Pip install') {
-                rtPip.install buildInfo: buildInfo, args: "-r python-example/pip-example/requirements.txt --no-cache-dir --force-reinstall --trusted-host 10.173.0.12", envActivation: virtual_env_activation
+                rtPip.install buildInfo: buildInfo, args: "-r python-example/pip-example/requirements.txt --no-cache-dir --force-reinstall ", envActivation: virtual_env_activation
 
                 echo 'in rtPip.install' 
                 if (buildInfo.getDependencies().size() > 0) {
