@@ -41,6 +41,7 @@ node('us-staging-jenkins')
                     echo localPath
                     echo remotePath
                 }
+                  sleep 300
             }
 
             stage ('Package and create distribution archives') {
@@ -80,7 +81,7 @@ node('us-staging-jenkins')
                    echo 'buildInfo is empty before publishBuildInfo !!!' 
 
                 }
-
+                sleep 300
                 server.publishBuildInfo buildInfo
             }
       }
