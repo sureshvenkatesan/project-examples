@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
-String PYTHON_DOCKER_IMAGE = 'docker.io/dwolla/jenkins-agent-python:latest'
-
+//String PYTHON_DOCKER_IMAGE = 'docker.io/dwolla/jenkins-agent-python:latest'
+String PYTHON_DOCKER_IMAGE = 'psuswestha1.jfrogrt.net/artifactory/athenahealth/athenahealth/cd/docker-ubuntu_ubuntubase/master-1.0.0-a85511c-20220912174402'
 
 node('us-staging-jenkins')
 {
