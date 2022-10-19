@@ -13,6 +13,7 @@ node('us-staging-jenkins')
             def server = Artifactory.server SERVER_ID
             def rtPip = Artifactory.newPipBuild()
             def buildInfo
+            sh 'mkdir -p ./venv'
             sh 'virtualenv -p /usr/bin/python3 ./venv'
             def virtual_env_activation = ". ./venv/bin/activate"
             //def virtual_env_activation = ". /Users/sureshv/PycharmProjects/my_virtual_env/bin/activate" // pip virtual-environment activation command
