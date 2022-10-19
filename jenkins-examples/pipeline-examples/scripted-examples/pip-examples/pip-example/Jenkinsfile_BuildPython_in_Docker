@@ -1,0 +1,91 @@
+#!/usr/bin/env groovy
+
+String PYTHON_DOCKER_IMAGE = 'docker.io/dwolla/jenkins-agent-python:latest'
+
+
+node('us-staging-jenkins')
+{
+
+
+      docker.image(PYTHON_DOCKER_IMAGE).inside()
+      {
+
+            def server = Artifactory.server SERVER_ID
+            def rtPip = Artifactory.newPipBuild()
+            def buildInfo
+            sh 'virtualenv -p /usr/bin/python ./venv'
+            def virtual_env_activation = ". ./venv/bin/activate"
+            //def virtual_env_activation = ". /Users/sureshv/PycharmProjects/my_virtual_env/bin/activate" // pip virtual-environment activation command
+
+            stage ('Clone') {
+                git url: 'https://github.com/jfrog/project-examples.git'
+            }
+
+            stage ('Artifactory configuration') {
+                rtPip.resolver repo: PIP_RESOLVER , server: server
+                buildInfo = Artifactory.newBuildInfo()
+                buildInfo.project = 'proj1'
+            }
+
+            stage ('Pip install') {
+                rtPip.install buildInfo: buildInfo, args: "-r python-example/pip-example/requirements.txt --no-cache-dir --force-reinstall", envActivation: virtual_env_activation
+
+                echo 'in rtPip.install' 
+                if (buildInfo.getDependencies().size() > 0) {
+                    def localPath = buildInfo.getDependencies()[0].getLocalPath()
+                    def remotePath = buildInfo.getDependencies()[0].getRemotePath()
+                    def md5 = buildInfo.getDependencies()[0].getMd5()
+                    def sha1 = buildInfo.getDependencies()[0].getSha1()
+
+                    echo localPath
+                    echo remotePath
+                }
+            }
+
+            stage ('Package and create distribution archives') {
+                sh '''
+                    $virtual_env_activation
+                    cd python-example/pip-example
+                    python setup.py sdist
+                '''
+            }
+
+            stage ('Upload packages') {
+              /*  def uploadSpec = """{
+                    "files": [
+                        {
+                            "pattern": "python-example/pip-example/dist/",
+                            "target": "proj1-pypi-virtual/"
+                        }
+                    ]
+                }""" */
+                def uploadFile = [[
+                            pattern: "python-example/pip-example/dist/",
+                            target: "proj1-pypi-virtual/athenatest"
+                ]]
+                //server.upload buildInfo: buildInfo, spec: uploadSpec
+                server.upload(spec: groovy.json.JsonOutput.toJson([files: uploadFile]),buildInfo: buildInfo)
+            }
+
+            stage ('Publish build info') {
+                    echo 'In Publish build info' 
+                    echo buildInfo.toString()
+                    if (buildInfo.getDependencies().size() > 0) {
+                    def localPath = buildInfo.getDependencies()[0].getLocalPath()
+                    def remotePath = buildInfo.getDependencies()[0].getRemotePath()
+                    def md5 = buildInfo.getDependencies()[0].getMd5()
+                    def sha1 = buildInfo.getDependencies()[0].getSha1()
+
+                    echo localPath
+                }
+                if (buildInfo.getDependencies().size() == 0) {
+                   echo 'buildInfo is empty before publishBuildInfo !!!' 
+
+                }
+
+                server.publishBuildInfo buildInfo
+            }
+      }
+
+
+}
