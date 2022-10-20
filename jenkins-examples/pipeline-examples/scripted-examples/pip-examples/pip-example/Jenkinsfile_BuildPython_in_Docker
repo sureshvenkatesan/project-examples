@@ -30,7 +30,7 @@ node('us-staging-jenkins')
 
             stage ('Pip install') {
                 rtPip.install buildInfo: buildInfo, args: "-r python-example/pip-example/requirements.txt --no-cache-dir --force-reinstall ", envActivation: virtual_env_activation
-
+                sh 'cat /var/jenkins_slave/workspace/PyPI Build Scripted Pipeline/.jfrog/projects/deps.cache.json'
                 echo 'in rtPip.install' 
                 if (buildInfo.getDependencies().size() > 0) {
                     def localPath = buildInfo.getDependencies()[0].getLocalPath()
@@ -81,10 +81,10 @@ node('us-staging-jenkins')
                    echo 'buildInfo is empty before publishBuildInfo !!!' 
 
                 }
-                
+                sh 'cat /var/jenkins_slave/workspace/PyPI Build Scripted Pipeline/.jfrog/projects/deps.cache.json'
                 server.publishBuildInfo buildInfo
                 echo 'Published the buildInfo' 
-                sleep 600
+                //sleep 600
             }
             stage ('Xray scan') {
 		       def scanConfig = [
