@@ -32,7 +32,7 @@ node('us-staging-jenkins')
 		echo 'in rtPip.install' 
 		sh '''
 		    ls -al "$(pip cache dir)"
-		    apt-get install -y python3-pip
+		    sudo apt update && sudo apt-get install -y python3-pip
 		    ls -al "$(pip cache dir)"
                     #rm -d -r "$(pip cache dir)"
                     python3 -m pip install -upgrade pip
