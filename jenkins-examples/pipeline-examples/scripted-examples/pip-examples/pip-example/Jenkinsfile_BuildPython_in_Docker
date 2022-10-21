@@ -35,7 +35,7 @@ node('us-staging-jenkins')
 		    #sudo apt update && sudo apt-get install -y python3-pip
 		    #ls -al "$(pip cache dir)"
                     #rm -d -r "$(pip cache dir)"
-                    python3 -m pip install -upgrade pip
+                    python3 -m pip install --upgrade pip
                     python3 -m pip cache purge 
 		    ls -al "$(pip cache dir)"
                 '''    
