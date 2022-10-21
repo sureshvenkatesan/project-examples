@@ -31,7 +31,7 @@ node('us-staging-jenkins')
             stage ('Pip install') {
 		echo 'in rtPip.install' 
 		sh '''
-                    rm -d -r "$(pip cache dir)"
+                    #rm -d -r "$(pip cache dir)"
                     python3 -m pip install -upgrade pip
                     python3 -m pip cache purge 
                 '''    
