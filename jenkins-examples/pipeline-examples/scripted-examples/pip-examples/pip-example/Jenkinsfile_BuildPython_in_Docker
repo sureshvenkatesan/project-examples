@@ -29,9 +29,15 @@ node('us-staging-jenkins')
             }
 
             stage ('Pip install') {
+		echo 'in rtPip.install' 
+		sh '''
+                    rm -d -r "$(pip cache dir)"
+                    python -m pip install -upgrade pip
+                    python -m pip cache purge 
+                '''    
                 rtPip.install buildInfo: buildInfo, args: "-r python-example/pip-example/requirements.txt --no-cache-dir --force-reinstall ", envActivation: virtual_env_activation
                 sh 'cat "/var/jenkins_slave/workspace/PyPI Build Scripted Pipeline/.jfrog/projects/deps.cache.json"'
-                echo 'in rtPip.install' 
+                
                 if (buildInfo.getDependencies().size() > 0) {
                     def localPath = buildInfo.getDependencies()[0].getLocalPath()
                     def remotePath = buildInfo.getDependencies()[0].getRemotePath()
