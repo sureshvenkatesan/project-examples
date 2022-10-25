@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
-String PYTHON_DOCKER_IMAGE = 'docker.io/dwolla/jenkins-agent-python:latest'
-//String PYTHON_DOCKER_IMAGE = 'psuswestha1.jfrogrt.net/athenahealth/athenahealth/cd/docker-ubuntu_ubuntubase:master-1.0.0-a85511c-20220912174402'
+//String PYTHON_DOCKER_IMAGE = 'docker.io/dwolla/jenkins-agent-python:latest'
+String PYTHON_DOCKER_IMAGE = 'psuswestha1.jfrogrt.net/athenahealth/athenahealth/cd/docker-ubuntu_ubuntubase:master-1.0.0-a85511c-20220912174402'
 
 node('us-staging-jenkins')
 {
@@ -35,9 +35,9 @@ node('us-staging-jenkins')
 		    #sudo apt update && sudo apt-get install -y python3-pip
 		    #ls -al "$(pip cache dir)"
                     #rm -d -r "$(pip cache dir)"
-                    python3 -m pip install --upgrade pip
-                    python3 -m pip cache purge 
-		    ls -al "$(pip cache dir)"
+                    #python3 -m pip install --upgrade pip
+                    #python3 -m pip cache purge 
+		    #ls -al "$(pip cache dir)"
                 '''    
                 rtPip.install buildInfo: buildInfo, args: "-r python-example/pip-example/requirements.txt --no-cache-dir --force-reinstall ", envActivation: virtual_env_activation
                 sh 'cat "/var/jenkins_slave/workspace/PyPI Build Scripted Pipeline/.jfrog/projects/deps.cache.json"'
